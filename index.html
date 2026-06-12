@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S&J희망나눔 AI 도구 허브</title>
+<meta name="description" content="사단법인 S&J희망나눔이 엄선한 현재 서비스 중인 AI 도구 모음">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+/* ─────────────────────────────────────────────
+   S&J희망나눔 AI 도구 허브 — 디자인 토큰
+───────────────────────────────────────────── */
+:root{
+  --primary:#0E6E5C;          /* S&J 그린 */
+  --primary-soft:#E3F2EE;
+  --accent:#F5B335;           /* 희망 골드 */
+  --accent-deep:#D98E0B;
+  --bg:#FAF9F6;
+  --surface:#FFFFFF;
+  --surface-2:#F2F1EC;
+  --text:#1A2421;
+  --text-sub:#5C6B66;
+  --line:#E5E3DC;
+  --shadow:0 2px 12px rgba(20,40,35,.07);
+  --shadow-lift:0 10px 28px rgba(20,40,35,.13);
+  --radius:16px;
+  --nav-h:64px;
+}
+html[data-theme="dark"]{
+  --primary:#3CCFAF;
+  --primary-soft:#10322B;
+  --accent:#F5B335;
+  --accent-deep:#F5C765;
+  --bg:#0F1614;
+  --surface:#18211E;
+  --surface-2:#1F2B27;
+  --text:#ECF2EF;
+  --text-sub:#9AABA4;
+  --line:#2A3833;
+  --shadow:0 2px 12px rgba(0,0,0,.35);
+  --shadow-lift:0 10px 28px rgba(0,0,0,.5);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Pretendard Variable',Pretendard,-apple-system,'Segoe UI',sans-serif;
+  background:var(--bg);color:var(--text);
+  transition:background .3s,color .3s;
+  line-height:1.55;
+}
+button{font-family:inherit;cursor:pointer}
+input{font-family:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+
+/* ── 내비게이션 ── */
+nav{
+  position:sticky;top:0;z-index:50;height:var(--nav-h);
+  display:flex;align-items:center;gap:16px;
+  padding:0 clamp(16px,4vw,40px);
+  background:color-mix(in srgb,var(--surface) 88%,transparent);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text)}
+.brand img,.brand svg{width:38px;height:38px;border-radius:10px;display:block}
+.brand-name{font-weight:800;font-size:17px;letter-spacing:-.02em}
+.brand-name small{display:block;font-weight:600;font-size:11px;color:var(--text-sub);letter-spacing:.02em}
+.nav-spacer{flex:1}
+.icon-btn{
+  width:40px;height:40px;border-radius:12px;border:1px solid var(--line);
+  background:var(--surface);color:var(--text);font-size:17px;
+  display:grid;place-items:center;transition:transform .15s,background .2s;
+}
+.icon-btn:hover{transform:translateY(-2px);background:var(--surface-2)}
+.lang-btn{width:auto;padding:0 13px;font-size:13px;font-weight:700}
+.login-btn{
+  height:40px;padding:0 18px;border-radius:12px;border:none;
+  background:var(--primary);color:#fff;font-weight:700;font-size:14px;
+  transition:transform .15s,opacity .2s;
+}
+html[data-theme="dark"] .login-btn{color:#06231C}
+.login-btn:hover{transform:translateY(-2px);opacity:.92}
+.user-chip{
+  display:none;align-items:center;gap:10px;height:40px;padding:0 6px 0 14px;
+  border:1px solid var(--line);border-radius:12px;background:var(--surface);
+  font-size:13.5px;font-weight:700;
+}
+.user-chip .out{
+  height:30px;padding:0 11px;border-radius:9px;border:none;
+  background:var(--surface-2);color:var(--text-sub);font-size:12px;font-weight:700;
+}
+.user-chip .out:hover{color:var(--text)}
+
+/* ── 히어로 ── */
+.hero{
+  position:relative;overflow:hidden;
+  padding:clamp(48px,8vw,88px) clamp(16px,4vw,40px) clamp(40px,6vw,64px);
+  text-align:center;
+}
+.hero::before,.hero::after{
+  content:"";position:absolute;border-radius:50%;filter:blur(70px);opacity:.5;z-index:0;
+  animation:drift 14s ease-in-out infinite alternate;
+}
+.hero::before{width:420px;height:420px;background:var(--primary-soft);top:-160px;left:-120px}
+.hero::after{width:360px;height:360px;background:color-mix(in srgb,var(--accent) 30%,transparent);bottom:-180px;right:-100px;animation-delay:-7s}
+@keyframes drift{from{transform:translate(0,0)}to{transform:translate(40px,24px)}}
+.hero>*{position:relative;z-index:1}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 14px;border-radius:99px;
+  background:var(--primary-soft);color:var(--primary);
+  font-size:12.5px;font-weight:800;letter-spacing:.04em;margin-bottom:18px;
+}
+.hero h1{
+  font-size:clamp(28px,5vw,46px);font-weight:800;letter-spacing:-.035em;line-height:1.18;
+}
+.hero h1 .hl{color:var(--primary)}
+.hero p{margin:14px auto 0;max-width:560px;color:var(--text-sub);font-size:clamp(14px,1.8vw,16.5px)}
+.hero-stats{display:flex;gap:28px;justify-content:center;margin-top:26px;flex-wrap:wrap}
+.hstat{font-size:13px;color:var(--text-sub);font-weight:600}
+.hstat b{display:block;font-size:24px;color:var(--text);font-weight:800;letter-spacing:-.02em}
+
+/* ── 검색·필터 ── */
+.toolbar{
+  max-width:1180px;margin:0 auto;padding:0 clamp(16px,4vw,40px) 22px;
+}
+.search-wrap{position:relative;max-width:560px;margin:0 auto 18px}
+.search-wrap .mag{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:16px;opacity:.55}
+#search{
+  width:100%;height:52px;padding:0 18px 0 46px;
+  border-radius:99px;border:1.5px solid var(--line);
+  background:var(--surface);color:var(--text);font-size:15px;
+  box-shadow:var(--shadow);transition:border-color .2s;
+}
+#search:focus{border-color:var(--primary);outline:none}
+.filters{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.chip{
+  padding:9px 16px;border-radius:99px;border:1.5px solid var(--line);
+  background:var(--surface);color:var(--text-sub);font-size:13.5px;font-weight:700;
+  transition:all .18s;
+}
+.chip:hover{border-color:var(--primary);color:var(--primary)}
+.chip.on{background:var(--primary);border-color:var(--primary);color:#fff}
+html[data-theme="dark"] .chip.on{color:#06231C}
+
+/* ── 카드 그리드 ── */
+.grid{
+  max-width:1180px;margin:0 auto;padding:6px clamp(16px,4vw,40px) 70px;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:18px;
+}
+.card{
+  position:relative;display:flex;flex-direction:column;gap:12px;
+  padding:22px;border-radius:var(--radius);
+  background:var(--surface);border:1px solid var(--line);
+  box-shadow:var(--shadow);text-decoration:none;color:var(--text);
+  transition:transform .18s,box-shadow .18s,border-color .18s;
+}
+.card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lift);border-color:color-mix(in srgb,var(--primary) 45%,var(--line))}
+.card-top{display:flex;align-items:center;gap:12px}
+.tool-ic{
+  width:46px;height:46px;border-radius:13px;display:grid;place-items:center;
+  font-size:23px;flex-shrink:0;
+}
+.card h3{font-size:16.5px;font-weight:800;letter-spacing:-.01em}
+.cat-tag{font-size:11.5px;font-weight:700;color:var(--text-sub)}
+.card p{font-size:13.5px;color:var(--text-sub);min-height:40px}
+.card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:auto}
+.go{font-size:13px;font-weight:800;color:var(--primary)}
+.badge{
+  font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:99px;
+  background:color-mix(in srgb,var(--accent) 22%,transparent);color:var(--accent-deep);
+}
+.no-res{display:none;text-align:center;padding:60px 20px;color:var(--text-sub)}
+.no-res .big{font-size:40px;margin-bottom:10px}
+
+/* ── 푸터 ── */
+footer{
+  border-top:1px solid var(--line);background:var(--surface);
+  padding:32px clamp(16px,4vw,40px);text-align:center;
+  color:var(--text-sub);font-size:13px;
+}
+footer b{color:var(--text)}
+footer a{color:var(--primary);text-decoration:none;font-weight:700}
+
+/* ── 모달 ── */
+.overlay{
+  position:fixed;inset:0;z-index:100;display:none;
+  align-items:center;justify-content:center;padding:18px;
+  background:rgba(10,18,15,.55);backdrop-filter:blur(4px);
+}
+.overlay.show{display:flex}
+.modal{
+  width:100%;max-width:400px;max-height:92vh;overflow-y:auto;
+  background:var(--surface);border-radius:22px;padding:30px 28px;
+  box-shadow:var(--shadow-lift);animation:pop .22s ease;
+}
+@keyframes pop{from{transform:scale(.94);opacity:0}to{transform:scale(1);opacity:1}}
+.modal h2{font-size:21px;font-weight:800;letter-spacing:-.02em}
+.modal .sub{font-size:13.5px;color:var(--text-sub);margin:6px 0 20px}
+.m-close{position:absolute}
+.modal-head{display:flex;justify-content:space-between;align-items:flex-start}
+.x-btn{width:34px;height:34px;border-radius:10px;border:none;background:var(--surface-2);color:var(--text-sub);font-size:15px}
+.field{margin-bottom:13px}
+.field label{display:block;font-size:12.5px;font-weight:700;color:var(--text-sub);margin-bottom:6px}
+.field .inp-wrap{position:relative}
+.field input{
+  width:100%;height:46px;padding:0 44px 0 14px;border-radius:12px;
+  border:1.5px solid var(--line);background:var(--bg);color:var(--text);font-size:14.5px;
+}
+.field input:focus{border-color:var(--primary);outline:none}
+.eye{
+  position:absolute;right:6px;top:50%;transform:translateY(-50%);
+  width:34px;height:34px;border:none;background:none;font-size:15px;opacity:.6;
+}
+.f-err{font-size:12px;color:#D94A38;margin-top:5px;display:none;font-weight:600}
+.primary-btn{
+  width:100%;height:48px;border-radius:13px;border:none;margin-top:6px;
+  background:var(--primary);color:#fff;font-size:15px;font-weight:800;
+  transition:opacity .2s;
+}
+html[data-theme="dark"] .primary-btn{color:#06231C}
+.primary-btn:hover{opacity:.92}
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--text-sub);font-size:12px;font-weight:600}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+.sns-col{display:flex;flex-direction:column;gap:9px}
+.sns-btn{
+  height:46px;border-radius:12px;border:1.5px solid var(--line);
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  font-size:14px;font-weight:700;transition:transform .15s;background:var(--surface);color:var(--text);
+}
+.sns-btn:hover{transform:translateY(-2px)}
+.sns-btn.kakao{background:#FEE500;border-color:#FEE500;color:#191919}
+.sns-btn.naver{background:#03C75A;border-color:#03C75A;color:#fff}
+.sns-btn svg{width:18px;height:18px}
+.switch-line{text-align:center;font-size:13px;color:var(--text-sub);margin-top:18px}
+.switch-line button{border:none;background:none;color:var(--primary);font-weight:800;font-size:13px}
+.demo-note{
+  margin-top:16px;padding:11px 13px;border-radius:11px;
+  background:var(--surface-2);font-size:11.5px;color:var(--text-sub);line-height:1.5;
+}
+.toast{
+  position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(80px);
+  z-index:200;padding:13px 22px;border-radius:13px;opacity:0;
+  background:var(--text);color:var(--bg);font-size:14px;font-weight:700;
+  box-shadow:var(--shadow-lift);transition:all .3s;pointer-events:none;max-width:90vw;
+}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+@media(max-width:560px){
+  .brand-name small{display:none}
+  .hero-stats{gap:18px}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ 내비게이션 ═══════════ -->
+<nav>
+  <a class="brand" href="#" aria-label="S&J희망나눔 홈">
+    <!-- 로고: 같은 폴더의 logo.png를 자동으로 불러오고, 없으면 SVG 엠블럼 표시 -->
+    <img id="logo-img" src="logo.png" alt="S&J희망나눔 로고"
+         onerror="this.outerHTML=document.getElementById('logo-fallback').innerHTML">
+    <span class="brand-name">S&amp;J희망나눔<small data-i18n="brandSub">AI 도구 허브</small></span>
+  </a>
+  <div class="nav-spacer"></div>
+  <button class="icon-btn lang-btn" id="lang-toggle" aria-label="언어 변경">EN</button>
+  <button class="icon-btn" id="theme-toggle" aria-label="다크모드 전환">🌙</button>
+  <button class="login-btn" id="nav-login" data-i18n="login">로그인</button>
+  <div class="user-chip" id="user-chip">
+    <span id="user-name"></span>
+    <button class="out" id="logout-btn" data-i18n="logout">로그아웃</button>
+  </div>
+</nav>
+
+<!-- SVG 로고 대체 템플릿 (logo.png가 없을 때 사용) -->
+<template id="logo-fallback">
+  <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="S&J 엠블럼">
+    <rect width="40" height="40" rx="10" fill="#0E6E5C"/>
+    <path d="M11 26c3 3 9 3 11 0 2-2 0-5-3-6l-4-1.5c-3-1-5-4-3-6 2-3 8-3 11 0" stroke="#F5B335" stroke-width="3" fill="none" stroke-linecap="round"/>
+  </svg>
+</template>
+
+<!-- ═══════════ 히어로 ═══════════ -->
+<header class="hero">
+  <span class="hero-eyebrow">🌱 <span data-i18n="eyebrow">사단법인 S&amp;J희망나눔 · 청소년 디지털 교육</span></span>
+  <h1><span data-i18n="heroA">지금 쓸 수 있는 AI 도구,</span><br><span class="hl" data-i18n="heroB">한 곳에서 만나보세요</span></h1>
+  <p data-i18n="heroSub">서비스 종료된 도구는 빼고, 현재 활발히 운영 중인 AI 도구만 엄선했습니다. 교육 현장과 업무에서 바로 활용해 보세요.</p>
+  <div class="hero-stats">
+    <div class="hstat"><b id="stat-tools">0</b><span data-i18n="statTools">등록 도구</span></div>
+    <div class="hstat"><b id="stat-cats">0</b><span data-i18n="statCats">카테고리</span></div>
+    <div class="hstat"><b id="stat-free">0</b><span data-i18n="statFree">무료 제공</span></div>
+  </div>
+</header>
+
+<!-- ═══════════ 검색 · 필터 ═══════════ -->
+<section class="toolbar">
+  <div class="search-wrap">
+    <span class="mag">🔍</span>
+    <input id="search" type="search" placeholder="도구 이름이나 기능으로 검색..." data-i18n-ph="searchPh" aria-label="AI 도구 검색">
+  </div>
+  <div class="filters" id="filters" role="group" aria-label="카테고리 필터"></div>
+</section>
+
+<!-- ═══════════ 카드 그리드 ═══════════ -->
+<main class="grid" id="grid"></main>
+<div class="no-res" id="no-res">
+  <div class="big">🔎</div>
+  <p data-i18n="noRes">검색 결과가 없습니다. 다른 키워드로 시도해 보세요.</p>
+</div>
+
+<!-- ═══════════ 푸터 ═══════════ -->
+<footer>
+  <p><b>사단법인 S&amp;J희망나눔</b> · <span data-i18n="footDesc">대구광역시 청소년교육복지 전문 비영리법인</span></p>
+  <p style="margin-top:6px"><a href="https://www.sj-hs.or.kr" target="_blank" rel="noopener">www.sj-hs.or.kr</a> · © 2026 S&amp;J Hope Sharing. All rights reserved.</p>
+</footer>
+
+<!-- ═══════════ 로그인/회원가입 모달 ═══════════ -->
+<div class="overlay" id="auth-overlay" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h2 id="auth-title" data-i18n="loginTitle">다시 만나서 반가워요</h2>
+        <p class="sub" id="auth-sub" data-i18n="loginSub">계정으로 로그인해 주세요</p>
+      </div>
+      <button class="x-btn" id="auth-close" aria-label="닫기">✕</button>
+    </div>
+
+    <!-- 이메일 폼 -->
+    <div class="field" id="f-name" style="display:none">
+      <label for="in-name" data-i18n="lblName">이름</label>
+      <div class="inp-wrap"><input id="in-name" type="text" autocomplete="name"></div>
+      <p class="f-err" id="err-name" data-i18n="errName">이름을 입력해 주세요</p>
+    </div>
+    <div class="field">
+      <label for="in-email" data-i18n="lblEmail">이메일</label>
+      <div class="inp-wrap"><input id="in-email" type="email" autocomplete="email" placeholder="name@example.com"></div>
+      <p class="f-err" id="err-email"></p>
+    </div>
+    <div class="field">
+      <label for="in-pw" data-i18n="lblPw">비밀번호</label>
+      <div class="inp-wrap">
+        <input id="in-pw" type="password" autocomplete="current-password">
+        <button class="eye" data-eye="in-pw" aria-label="비밀번호 표시">👁</button>
+      </div>
+      <p class="f-err" id="err-pw"></p>
+    </div>
+    <div class="field" id="f-pw2" style="display:none">
+      <label for="in-pw2" data-i18n="lblPw2">비밀번호 확인</label>
+      <div class="inp-wrap">
+        <input id="in-pw2" type="password" autocomplete="new-password">
+        <button class="eye" data-eye="in-pw2" aria-label="비밀번호 표시">👁</button>
+      </div>
+      <p class="f-err" id="err-pw2" data-i18n="errPw2">비밀번호가 일치하지 않습니다</p>
+    </div>
+    <button class="primary-btn" id="auth-submit" data-i18n="login">로그인</button>
+
+    <div class="divider"><span data-i18n="or">또는 SNS로 계속하기</span></div>
+    <div class="sns-col">
+      <button class="sns-btn google" id="sns-google">
+        <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15A11 11 0 0 0 2.18 7.06l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/></svg>
+        <span data-i18n="snsGoogle">Google로 계속하기</span>
+      </button>
+      <button class="sns-btn kakao" id="sns-kakao">
+        <svg viewBox="0 0 24 24"><path fill="#191919" d="M12 3C6.48 3 2 6.54 2 10.9c0 2.8 1.86 5.26 4.66 6.65l-.95 3.52c-.08.31.27.56.54.38l4.18-2.78c.51.05 1.04.08 1.57.08 5.52 0 10-3.54 10-7.85S17.52 3 12 3z"/></svg>
+        <span data-i18n="snsKakao">카카오로 계속하기</span>
+      </button>
+      <button class="sns-btn naver" id="sns-naver">
+        <svg viewBox="0 0 24 24"><path fill="#fff" d="M16.27 12.85 7.38 0H0v24h7.73V11.15L16.62 24H24V0h-7.73v12.85z" transform="scale(.75) translate(4 4)"/></svg>
+        <span data-i18n="snsNaver">네이버로 계속하기</span>
+      </button>
+    </div>
+
+    <p class="switch-line">
+      <span id="switch-txt" data-i18n="noAccount">아직 계정이 없으신가요?</span>
+      <button id="mode-switch" data-i18n="signup">회원가입</button>
+    </p>
+    <div class="demo-note" id="demo-note" data-i18n="demoNote">
+      ⚙️ 현재 데모 모드입니다. 배포 후 코드 상단 CONFIG에 각 플랫폼 키를 입력하면 실제 SNS 로그인이 작동합니다.
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   ① 배포 설정 — 이 부분만 수정하면 실제 SNS 로그인이 작동합니다
+   ───────────────────────────────────────────────────────────
+   · GOOGLE_CLIENT_ID : Google Cloud Console > OAuth 클라이언트 ID
+       (승인된 자바스크립트 원본에 배포 도메인 등록 필요)
+   · KAKAO_JS_KEY     : Kakao Developers > 앱 키 > JavaScript 키
+       (플랫폼 > Web에 배포 도메인, Redirect URI에 이 페이지 주소 등록)
+   · NAVER_CLIENT_ID  : Naver Developers > 애플리케이션 > Client ID
+   · NAVER_CALLBACK   : 네이버에 등록한 Callback URL (보통 이 페이지 주소)
+   키를 비워두면 자동으로 데모 모드로 동작합니다.
+═══════════════════════════════════════════════════════════ */
+const CONFIG = {
+  GOOGLE_CLIENT_ID: "",
+  KAKAO_JS_KEY:     "",
+  NAVER_CLIENT_ID:  "",
+  NAVER_CALLBACK:   ""   // 예: "https://ai.sj-hs.or.kr/index.html"
+};
+
+/* ═══════════ ② AI 도구 데이터 (현재 서비스 중인 도구만) ═══════════ */
+const CATS = [
+  {id:'all',  k:'전체',     e:'All'},
+  {id:'chat', k:'대화·텍스트', e:'Chat & Text'},
+  {id:'image',k:'이미지',   e:'Image'},
+  {id:'video',k:'영상',     e:'Video'},
+  {id:'audio',k:'음악·음성', e:'Audio'},
+  {id:'code', k:'코딩',     e:'Coding'},
+  {id:'edu',  k:'교육',     e:'Education'},
+  {id:'work', k:'생산성',   e:'Productivity'}
+];
+const TOOLS = [
+{name:'ChatGPT',ic:'🤖',col:'#10a37f',cat:'chat',dK:'OpenAI의 대표 대화형 AI',dE:'OpenAI flagship chat AI',url:'https://chat.openai.com',badge:'무료'},
+{name:'Claude',ic:'✴️',col:'#d97757',cat:'chat',dK:'Anthropic의 추론·작문 특화 AI',dE:'Anthropic AI for reasoning & writing',url:'https://claude.ai',badge:'무료'},
+{name:'Gemini',ic:'💎',col:'#4e8df5',cat:'chat',dK:'Google의 멀티모달 AI 어시스턴트',dE:'Google multimodal AI assistant',url:'https://gemini.google.com',badge:'무료'},
+{name:'뤼튼 Wrtn',ic:'📝',col:'#6c5ce7',cat:'chat',dK:'한국형 올인원 AI 포털',dE:'Korean all-in-one AI portal',url:'https://wrtn.ai',badge:'무료'},
+{name:'Perplexity',ic:'🔭',col:'#20b2aa',cat:'chat',dK:'출처 기반 AI 검색 엔진',dE:'AI search with cited sources',url:'https://www.perplexity.ai',badge:'무료'},
+{name:'NotebookLM',ic:'📓',col:'#1a73e8',cat:'work',dK:'문서 기반 AI 연구·요약 노트',dE:'AI research notebook from your docs',url:'https://notebooklm.google.com',badge:'무료'},
+{name:'Midjourney',ic:'🎨',col:'#5865f2',cat:'image',dK:'고품질 AI 아트 이미지 생성',dE:'High-quality AI art generation',url:'https://www.midjourney.com',badge:''},
+{name:'Ideogram',ic:'🖋️',col:'#222',cat:'image',dK:'텍스트 표현에 강한 이미지 AI',dE:'Image AI strong at text rendering',url:'https://ideogram.ai',badge:'무료'},
+{name:'Canva AI',ic:'🎭',col:'#00c4cc',cat:'image',dK:'AI 통합 디자인 플랫폼',dE:'AI-integrated design platform',url:'https://www.canva.com',badge:'무료'},
+{name:'Stability AI',ic:'🌀',col:'#7c3aed',cat:'image',dK:'오픈소스 이미지 생성 모델',dE:'Open-source image generation',url:'https://stability.ai',badge:''},
+{name:'Kling AI',ic:'🎬',col:'#0f0f1a',cat:'video',dK:'고품질 AI 영상 생성 (콰이쇼우)',dE:'High-quality AI video by Kuaishou',url:'https://klingai.com',badge:''},
+{name:'Seedance',ic:'🌊',col:'#3b5bdb',cat:'video',dK:'바이트댄스의 AI 영상 생성 모델',dE:'ByteDance AI video model',url:'https://seed.bytedance.com',badge:''},
+{name:'Runway',ic:'🛫',col:'#1c1c1e',cat:'video',dK:'영상 제작·편집 AI 스튜디오',dE:'AI video creation studio',url:'https://runwayml.com',badge:''},
+{name:'Google Vids',ic:'📹',col:'#ea4335',cat:'video',dK:'Google Workspace AI 영상 제작',dE:'Google Workspace AI video maker',url:'https://workspace.google.com/products/vids/',badge:''},
+{name:'Suno',ic:'🎵',col:'#ff6b35',cat:'audio',dK:'프롬프트로 노래·음악 생성',dE:'Generate full songs from prompts',url:'https://suno.com',badge:'무료'},
+{name:'ElevenLabs',ic:'🎙️',col:'#111',cat:'audio',dK:'자연스러운 AI 음성 합성',dE:'Natural AI voice synthesis',url:'https://elevenlabs.io',badge:'무료'},
+{name:'Claude Code',ic:'⌨️',col:'#d97757',cat:'code',dK:'터미널 기반 AI 코딩 에이전트',dE:'Agentic coding in your terminal',url:'https://www.anthropic.com/claude-code',badge:''},
+{name:'Cursor',ic:'💻',col:'#334155',cat:'code',dK:'AI 통합 코드 에디터',dE:'AI-integrated code editor',url:'https://cursor.sh',badge:'무료'},
+{name:'GitHub Copilot',ic:'🐙',col:'#24292e',cat:'code',dK:'GitHub의 AI 코딩 어시스턴트',dE:"GitHub's AI coding assistant",url:'https://github.com/features/copilot',badge:''},
+{name:'Khan Academy AI',ic:'🦉',col:'#14532d',cat:'edu',dK:'AI 기반 개인화 학습 (Khanmigo)',dE:'AI-powered personalized learning',url:'https://www.khanacademy.org',badge:'무료'},
+{name:'Socratic',ic:'📚',col:'#f59e0b',cat:'edu',dK:'Google AI 숙제 도우미 앱',dE:'Google AI homework helper',url:'https://socratic.org',badge:'무료'},
+{name:'Quizlet AI',ic:'🃏',col:'#4255ff',cat:'edu',dK:'AI 학습카드·튜터링',dE:'AI flashcards & tutoring',url:'https://quizlet.com',badge:'무료'},
+{name:'Gamma',ic:'📊',col:'#8b5cf6',cat:'work',dK:'AI 프레젠테이션·문서 생성',dE:'AI presentations & documents',url:'https://gamma.app',badge:'무료'},
+{name:'Notion AI',ic:'🗂️',col:'#191919',cat:'work',dK:'노트·문서 작업 AI 비서',dE:'AI assistant for notes & docs',url:'https://www.notion.com',badge:''}
+];
+
+/* ═══════════ ③ 다국어 사전 ═══════════ */
+const I18N = {
+  ko:{brandSub:'AI 도구 허브',eyebrow:'사단법인 S&J희망나눔 · 청소년 디지털 교육',
+    heroA:'지금 쓸 수 있는 AI 도구,',heroB:'한 곳에서 만나보세요',
+    heroSub:'서비스 종료된 도구는 빼고, 현재 활발히 운영 중인 AI 도구만 엄선했습니다. 교육 현장과 업무에서 바로 활용해 보세요.',
+    statTools:'등록 도구',statCats:'카테고리',statFree:'무료 제공',
+    searchPh:'도구 이름이나 기능으로 검색...',noRes:'검색 결과가 없습니다. 다른 키워드로 시도해 보세요.',
+    footDesc:'대구광역시 청소년교육복지 전문 비영리법인',
+    login:'로그인',logout:'로그아웃',signup:'회원가입',
+    loginTitle:'다시 만나서 반가워요',loginSub:'계정으로 로그인해 주세요',
+    signupTitle:'환영합니다!',signupSub:'몇 가지만 입력하면 끝나요',
+    lblName:'이름',lblEmail:'이메일',lblPw:'비밀번호',lblPw2:'비밀번호 확인',
+    errName:'이름을 입력해 주세요',errEmailFmt:'올바른 이메일 형식이 아닙니다',
+    errEmailNone:'등록되지 않은 이메일입니다. 회원가입을 먼저 진행해 주세요.',
+    errEmailDup:'이미 가입된 이메일입니다. 로그인해 주세요.',
+    errPwShort:'비밀번호는 6자 이상 입력해 주세요',errPwWrong:'비밀번호가 올바르지 않습니다',
+    errPw2:'비밀번호가 일치하지 않습니다',
+    or:'또는 SNS로 계속하기',snsGoogle:'Google로 계속하기',snsKakao:'카카오로 계속하기',snsNaver:'네이버로 계속하기',
+    noAccount:'아직 계정이 없으신가요?',haveAccount:'이미 계정이 있으신가요?',
+    demoNote:'⚙️ 현재 데모 모드입니다. 배포 후 코드 상단 CONFIG에 각 플랫폼 키를 입력하면 실제 SNS 로그인이 작동합니다.',
+    welcome:'님, 환영합니다! 🎉',bye:'로그아웃되었습니다',
+    open:'바로가기 ↗',demoSns:'데모 모드: CONFIG에 키를 입력하면 실제 로그인이 작동합니다'},
+  en:{brandSub:'AI Tools Hub',eyebrow:'S&J Hope Sharing · Youth Digital Education',
+    heroA:'Every AI tool that works today,',heroB:'curated in one place',
+    heroSub:'No discontinued services — only AI tools actively running right now, ready for classrooms and daily work.',
+    statTools:'Tools',statCats:'Categories',statFree:'Free tier',
+    searchPh:'Search by name or feature...',noRes:'No results found. Try another keyword.',
+    footDesc:'Youth education & welfare nonprofit in Daegu, Korea',
+    login:'Log in',logout:'Log out',signup:'Sign up',
+    loginTitle:'Welcome back',loginSub:'Log in to your account',
+    signupTitle:'Join us!',signupSub:'Just a few fields to get started',
+    lblName:'Name',lblEmail:'Email',lblPw:'Password',lblPw2:'Confirm password',
+    errName:'Please enter your name',errEmailFmt:'Invalid email format',
+    errEmailNone:'Email not registered. Please sign up first.',
+    errEmailDup:'Email already registered. Please log in.',
+    errPwShort:'Password must be at least 6 characters',errPwWrong:'Incorrect password',
+    errPw2:'Passwords do not match',
+    or:'or continue with',snsGoogle:'Continue with Google',snsKakao:'Continue with Kakao',snsNaver:'Continue with Naver',
+    noAccount:"Don't have an account?",haveAccount:'Already have an account?',
+    demoNote:'⚙️ Demo mode. After deployment, add platform keys to CONFIG at the top of the code to enable real SNS login.',
+    welcome:', welcome! 🎉',bye:'You have been logged out',
+    open:'Open ↗',demoSns:'Demo mode: add keys to CONFIG for real login'},
+};
+let lang = 'ko';
+
+/* ═══════════ ④ 안전한 저장소 (claude.ai 미리보기에서는 메모리로 대체) ═══════════ */
+const store = (() => {
+  let mem = {};
+  try { localStorage.setItem('__t','1'); localStorage.removeItem('__t');
+    return { get:k=>localStorage.getItem(k), set:(k,v)=>localStorage.setItem(k,v), del:k=>localStorage.removeItem(k) };
+  } catch(e) {
+    return { get:k=>mem[k]??null, set:(k,v)=>{mem[k]=v}, del:k=>{delete mem[k]} };
+  }
+})();
+
+/* ═══════════ ⑤ 렌더링 ═══════════ */
+const $ = id => document.getElementById(id);
+let activeCat = 'all';
+
+function t(key){ return (I18N[lang] && I18N[lang][key]) || I18N.ko[key] || key; }
+
+function applyI18n(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{ el.placeholder = t(el.dataset.i18nPh); });
+  $('lang-toggle').textContent = lang==='ko' ? 'EN' : '한';
+  document.documentElement.lang = lang;
+  renderFilters(); renderCards();
+}
+
+function renderFilters(){
+  $('filters').innerHTML = CATS.map(c=>
+    `<button class="chip${c.id===activeCat?' on':''}" data-cat="${c.id}">${lang==='ko'?c.k:c.e}</button>`
+  ).join('');
+}
+
+function softBg(hex){ return hex + '22'; }
+
+function renderCards(){
+  const q = $('search').value.trim().toLowerCase();
+  const list = TOOLS.filter(x=>{
+    const catOk = activeCat==='all' || x.cat===activeCat;
+    const text = (x.name+' '+x.dK+' '+x.dE).toLowerCase();
+    return catOk && (!q || text.includes(q));
+  });
+  $('no-res').style.display = list.length ? 'none' : 'block';
+  $('grid').innerHTML = list.map(x=>{
+    const cat = CATS.find(c=>c.id===x.cat);
+    return `<a class="card" href="${x.url}" target="_blank" rel="noopener noreferrer">
+      <div class="card-top">
+        <div class="tool-ic" style="background:${softBg(x.col)}">${x.ic}</div>
+        <div><h3>${x.name}</h3><span class="cat-tag">${lang==='ko'?cat.k:cat.e}</span></div>
+      </div>
+      <p>${lang==='ko'?x.dK:x.dE}</p>
+      <div class="card-foot">
+        <span class="go">${t('open')}</span>
+        ${x.badge?`<span class="badge">${lang==='ko'?x.badge:'Free'}</span>`:''}
+      </div>
+    </a>`;
+  }).join('');
+}
+
+function renderStats(){
+  $('stat-tools').textContent = TOOLS.length;
+  $('stat-cats').textContent = CATS.length - 1;
+  $('stat-free').textContent = TOOLS.filter(x=>x.badge).length;
+}
+
+/* ═══════════ ⑥ 테마 · 언어 토글 ═══════════ */
+function setTheme(th){
+  document.documentElement.dataset.theme = th;
+  $('theme-toggle').textContent = th==='dark' ? '☀️' : '🌙';
+  store.set('sj-theme', th);
+}
+$('theme-toggle').onclick = ()=> setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
+$('lang-toggle').onclick = ()=>{ lang = lang==='ko'?'en':'ko'; store.set('sj-lang',lang); applyI18n(); };
+
+/* ═══════════ ⑦ 회원 인증 (이메일: 데모 / SNS: 실제 SDK 연동) ═══════════ */
+let mode = 'login';   // 'login' | 'signup'
+function userDBLoad(){ try{ return JSON.parse(store.get('sj-users')||'{}'); }catch(e){ return {}; } }
+function userDBSave(db){ store.set('sj-users', JSON.stringify(db)); }
+
+function toast(msg){
+  const el = $('toast'); el.textContent = msg; el.classList.add('show');
+  clearTimeout(el._t); el._t = setTimeout(()=>el.classList.remove('show'), 2600);
+}
+function showErr(id,msg){ const e=$(id); e.textContent=msg; e.style.display='block'; }
+function hideErrs(){ document.querySelectorAll('.f-err').forEach(e=>e.style.display='none'); }
+
+function openAuth(m){
+  mode = m; hideErrs();
+  $('f-name').style.display  = m==='signup'?'block':'none';
+  $('f-pw2').style.display   = m==='signup'?'block':'none';
+  $('auth-title').textContent = t(m==='signup'?'signupTitle':'loginTitle');
+  $('auth-sub').textContent   = t(m==='signup'?'signupSub':'loginSub');
+  $('auth-submit').textContent= t(m==='signup'?'signup':'login');
+  $('switch-txt').textContent = t(m==='signup'?'haveAccount':'noAccount');
+  $('mode-switch').textContent= t(m==='signup'?'login':'signup');
+  $('in-pw').autocomplete = m==='signup'?'new-password':'current-password';
+  $('auth-overlay').classList.add('show');
+  $('in-email').focus();
+}
+function closeAuth(){ $('auth-overlay').classList.remove('show'); ['in-name','in-email','in-pw','in-pw2'].forEach(i=>$(i).value=''); }
+
+$('nav-login').onclick  = ()=>openAuth('login');
+$('auth-close').onclick = closeAuth;
+$('auth-overlay').onclick = e=>{ if(e.target===$('auth-overlay')) closeAuth(); };
+$('mode-switch').onclick = ()=>openAuth(mode==='login'?'signup':'login');
+document.querySelectorAll('.eye').forEach(b=>{
+  b.onclick = ()=>{ const i=$(b.dataset.eye); i.type = i.type==='password'?'text':'password'; };
+});
+
+$('auth-submit').onclick = ()=>{
+  hideErrs();
+  const name=$('in-name').value.trim(), email=$('in-email').value.trim().toLowerCase(),
+        pw=$('in-pw').value, pw2=$('in-pw2').value;
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  let bad = false;
+  if(mode==='signup' && !name){ showErr('err-name', t('errName')); bad=true; }
+  if(!emailOk){ showErr('err-email', t('errEmailFmt')); bad=true; }
+  if(pw.length<6){ showErr('err-pw', t('errPwShort')); bad=true; }
+  if(mode==='signup' && pw!==pw2){ showErr('err-pw2', t('errPw2')); bad=true; }
+  if(bad) return;
+
+  const db = userDBLoad();
+  if(mode==='signup'){
+    if(db[email]){ showErr('err-email', t('errEmailDup')); return; }
+    db[email] = { name, pw };
+    userDBSave(db);
+    loginAs(name, email);
+  } else {
+    if(!db[email]){ showErr('err-email', t('errEmailNone')); return; }
+    if(db[email].pw !== pw){ showErr('err-pw', t('errPwWrong')); return; }
+    loginAs(db[email].name, email);
+  }
+};
+
+function loginAs(name, email){
+  store.set('sj-session', JSON.stringify({name, email}));
+  $('nav-login').style.display = 'none';
+  $('user-chip').style.display = 'flex';
+  $('user-name').textContent = name;
+  closeAuth();
+  toast(lang==='ko' ? `${name}${t('welcome')}` : `${name}${t('welcome')}`);
+}
+$('logout-btn').onclick = ()=>{
+  store.del('sj-session');
+  $('nav-login').style.display = '';
+  $('user-chip').style.display = 'none';
+  toast(t('bye'));
+};
+
+/* ═══════════ ⑧ SNS 로그인 — 실제 SDK 연동 ═══════════
+   CONFIG에 키가 입력되어 있으면 실제 인증, 비어 있으면 데모 안내 */
+function loadScript(src){
+  return new Promise((res,rej)=>{
+    const s=document.createElement('script'); s.src=src; s.async=true;
+    s.onload=res; s.onerror=rej; document.head.appendChild(s);
+  });
+}
+function parseJwt(token){
+  try{
+    const base = token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
+    return JSON.parse(decodeURIComponent(atob(base).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')));
+  }catch(e){ return {}; }
+}
+
+/* — Google (Google Identity Services, 백엔드 불필요) — */
+$('sns-google').onclick = async ()=>{
+  if(!CONFIG.GOOGLE_CLIENT_ID){ toast(t('demoSns')); return; }
+  await loadScript('https://accounts.google.com/gsi/client');
+  google.accounts.id.initialize({
+    client_id: CONFIG.GOOGLE_CLIENT_ID,
+    callback: (resp)=>{
+      const p = parseJwt(resp.credential);
+      loginAs(p.name || p.email, p.email || 'google-user');
+    }
+  });
+  google.accounts.id.prompt();
+};
+
+/* — Kakao (JS SDK v2, 정적 호스팅 가능) — */
+$('sns-kakao').onclick = async ()=>{
+  if(!CONFIG.KAKAO_JS_KEY){ toast(t('demoSns')); return; }
+  await loadScript('https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js');
+  if(!Kakao.isInitialized()) Kakao.init(CONFIG.KAKAO_JS_KEY);
+  // 현재 페이지로 인가 코드 리다이렉트 → 페이지 로드 시 handleKakaoRedirect()가 처리
+  Kakao.Auth.authorize({ redirectUri: location.origin + location.pathname });
+};
+async function handleKakaoRedirect(){
+  const code = new URLSearchParams(location.search).get('code');
+  if(!code || !CONFIG.KAKAO_JS_KEY) return;
+  try{
+    const body = new URLSearchParams({
+      grant_type:'authorization_code', client_id:CONFIG.KAKAO_JS_KEY,
+      redirect_uri: location.origin + location.pathname, code
+    });
+    const tk = await fetch('https://kauth.kakao.com/oauth/token',{
+      method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}, body
+    }).then(r=>r.json());
+    if(!tk.access_token) return;
+    const me = await fetch('https://kapi.kakao.com/v2/user/me',{
+      headers:{ Authorization:'Bearer '+tk.access_token }
+    }).then(r=>r.json());
+    const nick = me.kakao_account?.profile?.nickname || 'Kakao 사용자';
+    history.replaceState(null,'',location.pathname);   // URL에서 code 제거
+    loginAs(nick, me.kakao_account?.email || 'kakao-user');
+  }catch(e){ console.warn('Kakao auth error', e); }
+}
+
+/* — Naver (네이버 아이디로 로그인 JS SDK, 팝업 방식) — */
+$('sns-naver').onclick = async ()=>{
+  if(!CONFIG.NAVER_CLIENT_ID){ toast(t('demoSns')); return; }
+  await loadScript('https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js');
+  const nv = new naver.LoginWithNaverId({
+    clientId: CONFIG.NAVER_CLIENT_ID,
+    callbackUrl: CONFIG.NAVER_CALLBACK || (location.origin + location.pathname),
+    isPopup: true
+  });
+  nv.init();
+  // SDK가 생성하는 기본 버튼 대신 인증 URL로 직접 팝업
+  const state = Math.random().toString(36).slice(2);
+  const authUrl = 'https://nid.naver.com/oauth2.0/authorize?response_type=token'
+    + '&client_id=' + CONFIG.NAVER_CLIENT_ID
+    + '&redirect_uri=' + encodeURIComponent(CONFIG.NAVER_CALLBACK || (location.origin+location.pathname))
+    + '&state=' + state;
+  window.open(authUrl, 'naverLogin', 'width=480,height=640');
+};
+async function handleNaverRedirect(){
+  // 네이버 implicit 방식: #access_token=... 으로 돌아옴
+  if(!location.hash.includes('access_token') || !CONFIG.NAVER_CLIENT_ID) return;
+  await loadScript('https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js');
+  const nv = new naver.LoginWithNaverId({
+    clientId: CONFIG.NAVER_CLIENT_ID,
+    callbackUrl: CONFIG.NAVER_CALLBACK || (location.origin + location.pathname)
+  });
+  nv.init();
+  nv.getLoginStatus(status=>{
+    if(status){
+      const name = nv.user.getNickName() || nv.user.getName() || 'Naver 사용자';
+      const email = nv.user.getEmail() || 'naver-user';
+      if(window.opener && window.opener.loginAs){
+        window.opener.loginAs(name, email);
+        window.close();
+      } else {
+        history.replaceState(null,'',location.pathname);
+        loginAs(name, email);
+      }
+    }
+  });
+}
+
+/* ═══════════ ⑨ 초기화 ═══════════ */
+(function init(){
+  // 저장된 설정 복원
+  const savedTheme = store.get('sj-theme');
+  if(savedTheme) setTheme(savedTheme);
+  else if(window.matchMedia('(prefers-color-scheme: dark)').matches) setTheme('dark');
+  const savedLang = store.get('sj-lang');
+  if(savedLang) lang = savedLang;
+
+  // 세션 복원
+  try{
+    const s = JSON.parse(store.get('sj-session')||'null');
+    if(s){ $('nav-login').style.display='none'; $('user-chip').style.display='flex'; $('user-name').textContent=s.name; }
+  }catch(e){}
+
+  // 실제 키가 모두 있으면 데모 안내문 숨김
+  if(CONFIG.GOOGLE_CLIENT_ID && CONFIG.KAKAO_JS_KEY && CONFIG.NAVER_CLIENT_ID)
+    $('demo-note').style.display='none';
+
+  renderStats(); applyI18n();
+  $('search').addEventListener('input', renderCards);
+  $('filters').addEventListener('click', e=>{
+    const b = e.target.closest('.chip'); if(!b) return;
+    activeCat = b.dataset.cat; renderFilters(); renderCards();
+  });
+
+  // SNS 리다이렉트 복귀 처리
+  handleKakaoRedirect();
+  handleNaverRedirect();
+})();
+</script>
+</body>
+</html>
