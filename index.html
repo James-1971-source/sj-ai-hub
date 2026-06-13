@@ -386,17 +386,32 @@ html[data-theme="dark"] .primary-btn{color:#06231C}
 
 <script>
 /* ═══════════════════════════════════════════════════════════
-   ① 배포 설정 — 이 부분만 수정하면 실제 SNS 로그인이 작동합니다
+   ① 배포 설정 — 이 부분만 수정하면 실제 로그인·회원 DB가 작동합니다
    ───────────────────────────────────────────────────────────
+   [ 실제 회원 DB — Firebase 무료 플랜(Spark) ]
+   · FIREBASE : Firebase Console > 프로젝트 설정 > 내 앱 > SDK 설정의
+     firebaseConfig 값을 그대로 붙여넣으세요. 입력 즉시:
+       - 이메일 가입/로그인이 실제 인증으로 전환 (모든 기기에서 로그인 가능)
+       - 회원 정보가 Firestore 'users' 컬렉션에 저장
+       - Google 로그인이 Firebase 팝업으로 자동 전환
+         (GOOGLE_CLIENT_ID 불필요 — 콘솔에서 Google 제공업체만 켜면 됨)
+
+   [ SNS 직접 연동 — Firebase 미사용 시 또는 Kakao/Naver ]
    · GOOGLE_CLIENT_ID : Google Cloud Console > OAuth 클라이언트 ID
-       (승인된 자바스크립트 원본에 배포 도메인 등록 필요)
    · KAKAO_JS_KEY     : Kakao Developers > 앱 키 > JavaScript 키
-       (플랫폼 > Web에 배포 도메인, Redirect URI에 이 페이지 주소 등록)
-   · NAVER_CLIENT_ID  : Naver Developers > 애플리케이션 > Client ID
+   · NAVER_CLIENT_ID  : Naver Developers > Client ID
    · NAVER_CALLBACK   : 네이버에 등록한 Callback URL (보통 이 페이지 주소)
-   키를 비워두면 자동으로 데모 모드로 동작합니다.
+   모두 비워두면 자동으로 데모 모드로 동작합니다.
 ═══════════════════════════════════════════════════════════ */
 const CONFIG = {
+  FIREBASE: {
+    apiKey:            "AIzaSyDW3ZjoZoDQP2AG7CAQxWFCvRqf-WIqpDc",
+    authDomain:        "sj-ai-hub.firebaseapp.com",
+    projectId:         "sj-ai-hub",
+    storageBucket:     "sj-ai-hub.firebasestorage.app",
+    messagingSenderId: "514971216544",
+    appId:             "1:514971216544:web:05ffba52cb1542fcb537c5"
+  },
   GOOGLE_CLIENT_ID: "",
   KAKAO_JS_KEY:     "",
   NAVER_CLIENT_ID:  "",
@@ -457,10 +472,10 @@ const I18N = {
     errEmailNone:'등록되지 않은 이메일입니다. 회원가입을 먼저 진행해 주세요.',
     errEmailDup:'이미 가입된 이메일입니다. 로그인해 주세요.',
     errPwShort:'비밀번호는 6자 이상 입력해 주세요',errPwWrong:'비밀번호가 올바르지 않습니다',
-    errPw2:'비밀번호가 일치하지 않습니다',
+    errPw2:'비밀번호가 일치하지 않습니다',errTooMany:'시도가 너무 많습니다. 잠시 후 다시 시도해 주세요.',
     or:'또는 SNS로 계속하기',snsGoogle:'Google로 계속하기',snsKakao:'카카오로 계속하기',snsNaver:'네이버로 계속하기',
     noAccount:'아직 계정이 없으신가요?',haveAccount:'이미 계정이 있으신가요?',
-    demoNote:'⚙️ 현재 데모 모드입니다. 배포 후 코드 상단 CONFIG에 각 플랫폼 키를 입력하면 실제 SNS 로그인이 작동합니다.',
+    demoNote:'⚙️ 현재 데모 모드입니다. CONFIG에 Firebase 설정을 입력하면 실제 회원 DB가, SNS 키를 입력하면 SNS 로그인이 작동합니다.',
     welcome:'님, 환영합니다! 🎉',bye:'로그아웃되었습니다',
     open:'바로가기 ↗',demoSns:'데모 모드: CONFIG에 키를 입력하면 실제 로그인이 작동합니다'},
   en:{brandSub:'AI Tools Hub',eyebrow:'S&J Hope Sharing · Youth Digital Education',
@@ -477,10 +492,10 @@ const I18N = {
     errEmailNone:'Email not registered. Please sign up first.',
     errEmailDup:'Email already registered. Please log in.',
     errPwShort:'Password must be at least 6 characters',errPwWrong:'Incorrect password',
-    errPw2:'Passwords do not match',
+    errPw2:'Passwords do not match',errTooMany:'Too many attempts. Please try again later.',
     or:'or continue with',snsGoogle:'Continue with Google',snsKakao:'Continue with Kakao',snsNaver:'Continue with Naver',
     noAccount:"Don't have an account?",haveAccount:'Already have an account?',
-    demoNote:'⚙️ Demo mode. After deployment, add platform keys to CONFIG at the top of the code to enable real SNS login.',
+    demoNote:'⚙️ Demo mode. Add your Firebase config to CONFIG for a real member DB, and SNS keys for social login.',
     welcome:', welcome! 🎉',bye:'You have been logged out',
     open:'Open ↗',demoSns:'Demo mode: add keys to CONFIG for real login'},
 };
@@ -604,6 +619,9 @@ $('auth-submit').onclick = ()=>{
   if(mode==='signup' && pw!==pw2){ showErr('err-pw2', t('errPw2')); bad=true; }
   if(bad) return;
 
+  // Firebase 연동 시 실제 인증으로 처리
+  if(FB_ON){ fbEmailAuth(name, email, pw); return; }
+
   const db = userDBLoad();
   if(mode==='signup'){
     if(db[email]){ showErr('err-email', t('errEmailDup')); return; }
@@ -617,20 +635,90 @@ $('auth-submit').onclick = ()=>{
   }
 };
 
-function loginAs(name, email){
-  store.set('sj-session', JSON.stringify({name, email}));
+function setUserUI(name){
   $('nav-login').style.display = 'none';
   $('user-chip').style.display = 'flex';
   $('user-name').textContent = name;
-  closeAuth();
-  toast(lang==='ko' ? `${name}${t('welcome')}` : `${name}${t('welcome')}`);
 }
-$('logout-btn').onclick = ()=>{
-  store.del('sj-session');
+function setLoggedOutUI(){
   $('nav-login').style.display = '';
   $('user-chip').style.display = 'none';
+}
+function loginAs(name, email){
+  store.set('sj-session', JSON.stringify({name, email}));
+  setUserUI(name);
+  closeAuth();
+  toast(`${name}${t('welcome')}`);
+}
+$('logout-btn').onclick = async ()=>{
+  store.del('sj-session');
+  if(FB_ON){ try{ await fbInit(); await firebase.auth().signOut(); }catch(e){} }
+  setLoggedOutUI();
   toast(t('bye'));
 };
+
+/* ═══════════ ⑦-2 Firebase 실제 회원 DB 연동 ═══════════
+   CONFIG.FIREBASE 입력 시: 이메일 인증은 Firebase Authentication,
+   회원 프로필은 Firestore 'users' 컬렉션에 저장됩니다. */
+const FB_ON = !!(CONFIG.FIREBASE && CONFIG.FIREBASE.apiKey);
+let _fbReady = null;
+function fbInit(){
+  if(!FB_ON) return Promise.resolve(false);
+  if(_fbReady) return _fbReady;
+  _fbReady = (async ()=>{
+    const v = '10.12.2';
+    await loadScript('https://www.gstatic.com/firebasejs/'+v+'/firebase-app-compat.js');
+    await loadScript('https://www.gstatic.com/firebasejs/'+v+'/firebase-auth-compat.js');
+    await loadScript('https://www.gstatic.com/firebasejs/'+v+'/firebase-firestore-compat.js');
+    firebase.initializeApp(CONFIG.FIREBASE);
+    // 로그인 상태 자동 복원 (새로고침·재방문 시)
+    firebase.auth().onAuthStateChanged(u=>{
+      if(u) setUserUI(u.displayName || u.email);
+      else if(!store.get('sj-session')) setLoggedOutUI();  // Kakao/Naver 로컬 세션은 유지
+    });
+    return true;
+  })();
+  return _fbReady;
+}
+function fbUpsertUser(uid, name, email, provider){
+  return firebase.firestore().collection('users').doc(uid).set({
+    name: name || '', email: email || '', provider: provider,
+    lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+  }, {merge:true}).catch(e=>console.warn('Firestore:', e));
+}
+const FB_ERR = {
+  'auth/email-already-in-use': ['err-email','errEmailDup'],
+  'auth/user-not-found':       ['err-email','errEmailNone'],
+  'auth/invalid-email':        ['err-email','errEmailFmt'],
+  'auth/invalid-credential':   ['err-pw','errPwWrong'],
+  'auth/wrong-password':       ['err-pw','errPwWrong'],
+  'auth/weak-password':        ['err-pw','errPwShort'],
+  'auth/too-many-requests':    ['err-pw','errTooMany']
+};
+async function fbEmailAuth(name, email, pw){
+  await fbInit();
+  try{
+    let user;
+    if(mode === 'signup'){
+      const cred = await firebase.auth().createUserWithEmailAndPassword(email, pw);
+      await cred.user.updateProfile({ displayName: name });
+      user = cred.user;
+      await fbUpsertUser(user.uid, name, email, 'email');
+      setUserUI(name);
+    } else {
+      const cred = await firebase.auth().signInWithEmailAndPassword(email, pw);
+      user = cred.user;
+      await fbUpsertUser(user.uid, user.displayName, email, 'email');
+      setUserUI(user.displayName || email);
+    }
+    closeAuth();
+    toast((user.displayName || email) + t('welcome'));
+  }catch(e){
+    const m = FB_ERR[e.code];
+    if(m) showErr(m[0], t(m[1]));
+    else showErr('err-pw', e.message || 'Error');
+  }
+}
 
 /* ═══════════ ⑧ SNS 로그인 — 실제 SDK 연동 ═══════════
    CONFIG에 키가 입력되어 있으면 실제 인증, 비어 있으면 데모 안내 */
@@ -647,8 +735,22 @@ function parseJwt(token){
   }catch(e){ return {}; }
 }
 
-/* — Google (Google Identity Services, 백엔드 불필요) — */
+/* — Google: Firebase 연동 시 팝업 인증(권장), 미연동 시 GIS 직접 연동 — */
 $('sns-google').onclick = async ()=>{
+  if(FB_ON){
+    await fbInit();
+    try{
+      const cred = await firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider());
+      const u = cred.user;
+      await fbUpsertUser(u.uid, u.displayName, u.email, 'google');
+      setUserUI(u.displayName || u.email);
+      closeAuth();
+      toast((u.displayName || u.email) + t('welcome'));
+    }catch(e){
+      if(e.code !== 'auth/popup-closed-by-user') console.warn('Google auth:', e);
+    }
+    return;
+  }
   if(!CONFIG.GOOGLE_CLIENT_ID){ toast(t('demoSns')); return; }
   await loadScript('https://accounts.google.com/gsi/client');
   google.accounts.id.initialize({
@@ -741,15 +843,23 @@ async function handleNaverRedirect(){
   const savedLang = store.get('sj-lang');
   if(savedLang) lang = savedLang;
 
-  // 세션 복원
-  try{
-    const s = JSON.parse(store.get('sj-session')||'null');
-    if(s){ $('nav-login').style.display='none'; $('user-chip').style.display='flex'; $('user-name').textContent=s.name; }
-  }catch(e){}
-
-  // 실제 키가 모두 있으면 데모 안내문 숨김
-  if(CONFIG.GOOGLE_CLIENT_ID && CONFIG.KAKAO_JS_KEY && CONFIG.NAVER_CLIENT_ID)
-    $('demo-note').style.display='none';
+  // Firebase 연동 시: 인증 상태 자동 복원 / 미연동 시: 로컬 세션 복원
+  if(FB_ON){
+    fbInit();
+    $('demo-note').style.display = 'none';
+    // Kakao/Naver 로컬 세션도 함께 복원
+    try{
+      const s = JSON.parse(store.get('sj-session')||'null');
+      if(s) setUserUI(s.name);
+    }catch(e){}
+  } else {
+    try{
+      const s = JSON.parse(store.get('sj-session')||'null');
+      if(s) setUserUI(s.name);
+    }catch(e){}
+    if(CONFIG.GOOGLE_CLIENT_ID && CONFIG.KAKAO_JS_KEY && CONFIG.NAVER_CLIENT_ID)
+      $('demo-note').style.display='none';
+  }
 
   renderStats(); applyI18n();
   $('search').addEventListener('input', renderCards);
